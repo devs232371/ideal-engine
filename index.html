@@ -372,6 +372,15 @@
       border: 2px solid #00ffcc;
       box-shadow: 0 0 16px #00ffcc55, 0 0 32px #39ff1444;
     }
+    @keyframes popscale {
+      0% { transform: scale(0.2); opacity:0; }
+      60% { transform: scale(1.15); opacity:1; }
+      100% { transform: scale(1); opacity:1; }
+    }
+    @keyframes floaty {
+      0% { transform: translateY(0) rotate(-8deg);}
+      100% { transform: translateY(-40px) rotate(8deg);}
+    }
   </style>
 </head>
 <body>
@@ -381,6 +390,18 @@
     <div class="cooldown-bar-inner">
       <span class="cooldown-title">LAUNCH IN</span>
       <span id="cooldown-timer">10:00:00</span>
+    </div>
+  </div>
+
+  <div id="launch-animation" style="display:none; position:fixed; z-index:99999; top:0; left:0; width:100vw; height:100vh; background:rgba(24,28,43,0.96); align-items:center; justify-content:center; flex-direction:column;">
+    <div style="font-size:4rem; color:#39ff14; text-shadow:0 0 32px #00ffcc,0 0 64px #39ff14; margin-bottom:2rem; animation: popscale 1.2s cubic-bezier(.4,2,.6,1) 1;">
+      🚀 LAUNCHED!!! 👽👽
+    </div>
+    <div style="display:flex; gap:2rem;">
+      <img src="alien1.png" style="width:120px; animation: floaty 2.2s infinite alternate;" />
+      <img src="alien2.png" style="width:120px; animation: floaty 2.5s 0.5s infinite alternate;" />
+      <img src="alien3.png" style="width:120px; animation: floaty 2.1s 1s infinite alternate;" />
+      <img src="alien4.png" style="width:120px; animation: floaty 2.3s 1.5s infinite alternate;" />
     </div>
   </div>
 
@@ -473,6 +494,9 @@
       <a href="https://t.me/+wi_r_ObQpeo3NDhk" target="_blank" class="social-btn">
         <img src="telegram-logo.png" alt="Telegram" />
       </a>
+      <a href="https://dexscreener.com/solana/TOKEN" target="_blank" class="social-btn" title="Dexscreener">
+        <img src="dexscreener-logo.png" alt="Dexscreener" />
+      </a>
     </div>
   </footer>
 
@@ -556,24 +580,48 @@
     // Cooldown timer for a specific date/time
     (function() {
       const timer = document.getElementById('cooldown-timer');
-      // Set your launch date/time here (UTC or local time)
-      // Example: "2025-07-01T18:00:00Z" (UTC) or "2025-07-01T18:00:00" (local)
-      const launchTime = new Date("2025-07-01T18:00:00Z").getTime();
+      const launchAnim = document.getElementById('launch-animation');
+      // Set launch date/time to 21st June 2025 at 07:52:00 UTC+3 (which is 04:52:00 UTC)
+      const launchDateUTC = new Date(Date.UTC(2025, 5, 21, 20, 0, 0));
+      let launched = false;
+      function showLaunchAnimation() {
+        launchAnim.style.display = 'flex';
+        setTimeout(() => {
+          launchAnim.style.opacity = '1';
+        }, 50);
+        setTimeout(() => {
+          launchAnim.style.transition = 'opacity 1s';
+          launchAnim.style.opacity = '0';
+          setTimeout(() => { launchAnim.style.display = 'none'; }, 1000);
+        }, 5000);
+      }
       function updateTimer() {
-        const now = Date.now();
-        let diff = Math.max(0, launchTime - now);
-        const hours = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
-        diff %= 1000 * 60 * 60;
-        const minutes = String(Math.floor(diff / (1000 * 60))).padStart(2, '0');
-        diff %= 1000 * 60;
-        const seconds = String(Math.floor(diff / 1000)).padStart(2, '0');
-        timer.textContent = `${hours}:${minutes}:${seconds}`;
-        if (launchTime - now > 0) {
+        const nowLocal = new Date();
+        let diff = Math.max(0, launchDateUTC.getTime() - nowLocal.getTime());
+        if (diff > 0) {
+          const hours = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
+          diff %= 1000 * 60 * 60;
+          const minutes = String(Math.floor(diff / (1000 * 60))).padStart(2, '0');
+          diff %= 1000 * 60;
+          const seconds = String(Math.floor(diff / 1000)).padStart(2, '0');
+          timer.textContent = `${hours}:${minutes}:${seconds}`;
           requestAnimationFrame(updateTimer);
         } else {
-          document.getElementById('launch-cooldown').style.display = 'none';
+          if (!launched) {
+            timer.textContent = 'Launched!!!👽👽';
+            launched = true;
+            showLaunchAnimation();
+          }
         }
       }
+      // If already launched, show animation immediately on load
+      window.addEventListener('DOMContentLoaded', function() {
+        const nowLocal = new Date();
+        if (nowLocal.getTime() >= launchDateUTC.getTime()) {
+          timer.textContent = 'Launched!!!👽👽';
+          showLaunchAnimation();
+        }
+      });
       updateTimer();
     })();
 
