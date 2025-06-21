@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alien Coin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Orbitron', Arial, sans-serif;
+      /* Animated multi-color gradient background */
+      background: linear-gradient(120deg, #181c2b 0%, #23294a 40%, #3a1c71 60%, #d76d77 80%, #ffaf7b 100%);
+      background-size: 200% 200%;
+      animation: bg-move 18s ease-in-out infinite;
+      color: #ffffff;
+      text-shadow: 2px 2px 8px #000, 0 0 4px #00ffcc;
+      font-size: 1.5rem;
+      padding-top: 6.5rem;
+      line-height: 1.8;
+      position: relative;
+      overflow-x: hidden;
+    }
+    @keyframes bg-move {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    /* Nebula/Aurora overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      /* Purely soft, flowing nebula/aurora overlay with no visible edges */
+      background:
+        radial-gradient(ellipse at 20% 30%, rgba(255,0,200,0.08) 0%, transparent 80%),
+        radial-gradient(ellipse at 80% 70%, rgba(0,255,200,0.06) 0%, transparent 80%),
+        radial-gradient(ellipse at 60% 20%, rgba(255,255,0,0.05) 0%, transparent 85%),
+        radial-gradient(ellipse at 40% 80%, rgba(0,200,255,0.07) 0%, transparent 85%),
+        radial-gradient(ellipse at 70% 40%, rgba(255,100,0,0.05) 0%, transparent 85%);
+      background-repeat: no-repeat;
+      background-size: 120vw 100vh, 100vw 120vh, 140vw 100vh, 100vw 140vh, 120vw 120vh;
+      animation: nebula-move 40s ease-in-out infinite;
+      mix-blend-mode: lighten;
+      opacity: 0.7;
+    }
+    @keyframes nebula-move {
+      0% { background-position: 0 0, 100vw 100vh, 50vw 0, 0 0; }
+      50% { background-position: 100vw 0, 0 100vh, 0 50vh, 200px 200px; }
+      100% { background-position: 0 0, 100vw 100vh, 50vw 0, 0 0; }
+    }
+    .coin-ticker, .section h2, .contract button {
+      text-shadow: 0 0 12px #00ffcc, 0 0 24px #39ff14;
+      box-shadow: 0 0 16px 2px #00ffcc55, 0 0 32px 4px #39ff1444;
+      border-radius: 0.5em;
+    }
+    .contract button {
+      border: 2px solid #39ff14;
+      box-shadow: 0 0 16px 2px #00ffcc55, 0 0 32px 4px #39ff1444;
+      transition: box-shadow 0.2s, background 0.2s;
+    }
+    .contract button:hover {
+      background: #39ff14;
+      color: #181c2b;
+      box-shadow: 0 0 32px 8px #39ff14aa;
+    }
+    .section, .gallery img, .contract input {
+      box-shadow: 0 0 24px 0 #00ffcc22, 0 0 48px 0 #39ff1422;
+      border-radius: 1.5rem;
+    }
+    .gallery img {
+      border: 4px solid #00ffcc;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .gallery img:hover {
+      box-shadow: 0 0 32px 8px #39ff14aa;
+      border-color: #39ff14;
+    }
+    /* Parallax floating alien icon */
+    .floating-alien {
+      position: fixed;
+      z-index: 10;
+      opacity: 0.7;
+      pointer-events: auto;
+      will-change: transform, top, left;
+      filter: drop-shadow(0 0 12px #00ffcc77) drop-shadow(0 0 16px #39ff1477);
+      border-radius: 18px;
+      /* Soft edges for non-transparent PNGs */
+      background: transparent;
+      transition: filter 0.2s, transform 0.2s;
+      cursor: url('alien-cursor.png'), pointer;
+    }
+    .floating-alien:active {
+      transform: scale(1.2) rotate(20deg);
+      filter: drop-shadow(0 0 32px #39ff14cc) drop-shadow(0 0 24px #00ffccbb);
+    }
+    .floating-alien:hover {
+      filter: drop-shadow(0 0 32px #39ff14cc) drop-shadow(0 0 24px #00ffccbb);
+      transform: scale(1.1) rotate(-10deg);
+    }
+    .floating-alien.up {
+      animation: float-alien-up linear infinite;
+    }
+    .floating-alien.down {
+      animation: float-alien-down linear infinite;
+    }
+    @keyframes float-alien-up {
+      0% { transform: translateY(100vh); opacity: 0; }
+      10% { opacity: 0.7; }
+      90% { opacity: 0.7; }
+      100% { transform: translateY(-120px); opacity: 0; }
+    }
+    @keyframes float-alien-down {
+      0% { transform: translateY(-120px); opacity: 0; }
+      10% { opacity: 0.7; }
+      90% { opacity: 0.7; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+    /* Parallax stars - second layer */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      background: url('data:image/svg+xml;utf8,<svg width="100%25" height="100%25" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="1.2" fill="white" opacity="0.08"/><circle cx="150" cy="200" r="1.5" fill="white" opacity="0.10"/><circle cx="350" cy="100" r="1.1" fill="white" opacity="0.09"/><circle cx="600" cy="250" r="1.3" fill="white" opacity="0.07"/><circle cx="900" cy="400" r="1.4" fill="white" opacity="0.11"/></svg>');
+      background-repeat: repeat;
+      background-size: 600px 600px;
+      animation: stars-move2 120s linear infinite;
+    }
+    @keyframes stars-move2 {
+      0% { background-position: 0 0; }
+      100% { background-position: 600px 600px; }
+    }
+    .contract {
+      text-align: center;
+      margin: 1rem 0;
+    }
+    .contract input {
+      font-family: monospace;
+      width: 400px;
+      padding: 1rem;
+      font-size: 1.5rem;
+      background: #222;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+      text-shadow: 1px 1px 4px #000;
+    }
+    .contract button {
+      padding: 1rem 2rem;
+      margin-left: 1rem;
+      background: #00ffcc;
+      border: none;
+      font-weight: bold;
+      color: #0b0f1a;
+      cursor: pointer;
+      font-size: 1.25rem;
+    }
+    .section {
+      max-width: 1000px;
+      margin: auto;
+      padding: 3rem;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+    }
+    .gallery img {
+      width: 320px;
+      height: auto;
+      border: 4px solid #00ffcc;
+      margin-bottom: 1.2rem;
+    }
+    footer {
+      padding: 3rem;
+      text-align: center;
+      font-size: 1.25rem;
+      color: #b0b0b0;
+    }
+    .section, .contract, .authority-section, .authority-box, .gallery, footer {
+      margin-bottom: 2.2rem;
+    }
+    .section ul, .section p, .section h2, .section div {
+      margin-bottom: 1.2em;
+    }
+    .social-buttons {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+    }
+    .social-btn img {
+      width: 64px;
+      height: 64px;
+      opacity: 0.6;
+      transition: opacity 0.2s, transform 0.2s;
+      border-radius: 50%;
+      background: transparent;
+      box-shadow: none;
+    }
+    .social-btn img:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    .authority-section {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin: 2rem 0 0 0;
+    }
+    .authority-box {
+      background: linear-gradient(135deg, #222 60%, #00ffcc22 100%);
+      border: 3px dotted #00ffcc;
+      border-radius: 40% 60% 60% 40% / 50% 40% 60% 50%;
+      padding: 2.5rem 3.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 6px 32px #00ffcc33;
+      font-size: 1.4rem;
+      min-width: 220px;
+    }
+    .authority-title {
+      color: #00ffcc;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      text-shadow: 1px 1px 6px #000;
+    }
+    .authority-status {
+      color: #ff6666;
+      font-weight: bold;
+      text-shadow: 1px 1px 6px #000;
+    }
+    .cooldown-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      width: 100vw;
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .cooldown-bar-inner {
+      background: linear-gradient(90deg, #00ffcc 0%, #0b0f1a 100%);
+      border-bottom: 3px solid #00ffcc;
+      border-radius: 0 0 2rem 2rem;
+      box-shadow: 0 6px 32px #00ffcc33;
+      padding: 1.2rem 3rem;
+      margin: 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      min-width: 340px;
+      pointer-events: auto;
+    }
+    .cooldown-title {
+      font-size: 1.7rem;
+      color: #0b0f1a;
+      font-weight: bold;
+      text-shadow: 2px 2px 10px #00ffcc;
+    }
+    #cooldown-timer {
+      font-size: 2.2rem;
+      color: #fff;
+      font-family: monospace;
+      text-shadow: 2px 2px 10px #0b0f1a;
+    }
+    header {
+      padding: 3rem;
+      text-align: center;
+      width: 100vw;
+      box-sizing: border-box;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      width: 100%;
+    }
+    header p {
+      text-align: center;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Alien Meme Generator Styles */
+    #meme-canvas {
+      background: #181c2b;
+      border-radius: 1.5rem;
+      box-shadow: 0 0 24px #00ffcc55;
+      margin-bottom: 0.5rem;
+    }
+    #meme-alien-select, #meme-top-text, #meme-bottom-text {
+      font-size: 1.1rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 0.5rem;
+      border: 2px solid #00ffcc;
+      background: #23294a;
+      color: #00ffcc;
+    }
+    #download-meme-btn {
+      margin-top: 0.5rem;
+      padding: 0.7rem 2rem;
+      font-size: 1.2rem;
+      background: #00ffcc;
+      color: #181c2b;
+      border: none;
+      border-radius: 0.7rem;
+      font-weight: bold;
+      box-shadow: 0 0 16px #00ffcc77;
+      cursor: pointer;
+    }
+    .floating-alien.alien1:hover {
+      filter: drop-shadow(0 0 40px #ff00cc) drop-shadow(0 0 24px #00ffccbb);
+      transition: filter 0.2s;
+    }
+    .floating-alien.alien2:hover {
+      filter: drop-shadow(0 0 40px #39ff14) drop-shadow(0 0 32px #00ffcc);
+      transition: filter 0.2s;
+    }
+    .floating-alien.alien3:hover {
+      filter: drop-shadow(0 0 40px #00ccff) drop-shadow(0 0 32px #ffcc00);
+      transition: filter 0.2s;
+    }
+    .floating-alien.alien4:hover {
+      filter: drop-shadow(0 0 40px #ffcc00) drop-shadow(0 0 32px #ff00cc);
+      transition: filter 0.2s;
+    }
+    .floating-alien.alien5:hover {
+      filter: drop-shadow(0 0 40px #ff4444) drop-shadow(0 0 32px #39ff14);
+      transition: filter 0.2s;
+    }
+    .floating-alien.alien6:hover {
+      filter: drop-shadow(0 0 40px #00ffcc) drop-shadow(0 0 32px #ff00cc);
+      transition: filter 0.2s;
+    }
+    h1, h2, .section h2 {
+      font-family: 'Orbitron', Arial, sans-serif;
+    }
+    .coin-name {
+      font-family: 'Audiowide', 'Orbitron', Arial, sans-serif;
+      letter-spacing: 0.12em;
+      font-size: 4rem;
+      color: #39ff14;
+      text-shadow: 0 0 18px #00ffcc, 0 0 32px #000;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .coin-ticker {
+      font-family: 'Share Tech Mono', 'Press Start 2P', 'Orbitron', monospace;
+      font-size: 2.2rem;
+      color: #00ffcc;
+      letter-spacing: 0.18em;
+      text-shadow: 0 0 16px #39ff14, 0 0 32px #000;
+      margin-left: 0.7rem;
+      vertical-align: middle;
+      padding: 0.2em 0.5em;
+      border-radius: 0.5em;
+      background: rgba(24,28,43,0.7);
+      border: 2px solid #00ffcc;
+      box-shadow: 0 0 16px #00ffcc55, 0 0 32px #39ff1444;
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating Aliens (multiple, random positions) -->
+  <div id="floating-aliens"></div>
+  <div id="launch-cooldown" class="cooldown-bar">
+    <div class="cooldown-bar-inner">
+      <span class="cooldown-title">LAUNCH IN</span>
+      <span id="cooldown-timer">10:00:00</span>
+    </div>
+  </div>
+
+  <header>
+    <h1><span class="coin-name">👽 ALIEN COIN</span> <span class="coin-ticker">$ACOIN$</span></h1>
+    <p>The intergalactic currency on Solana, listed on Raydium</p>
+  </header>
+
+  <div class="contract">
+    <p>Contract Address:</p>
+    <input type="text" id="contractAddress" value="PASTE-YOUR-CONTRACT-HERE" readonly />
+    <button onclick="copyAddress()">Copy</button>
+  </div>
+
+  <div class="section" id="roadmap">
+    <h2 style="font-size:2.5rem; color:#39ff14; text-shadow:0 0 12px #00ffcc, 0 0 24px #000; margin-bottom:2.5rem; letter-spacing:0.05em;">Evolution Roadmap <span style="font-size:2rem; vertical-align:middle;">🗺️✨</span></h2>
+    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:2.5rem;">
+      <div style="background:linear-gradient(135deg,#222 60%,#00ffcc22 100%); border:3px dotted #00ffcc; border-radius:2.5rem; padding:2.5rem 2.5rem; min-width:260px; max-width:320px; box-shadow:0 6px 32px #00ffcc33; display:flex; flex-direction:column; align-items:center;">
+        <div style="font-size:2.2rem; margin-bottom:1rem; color:#00ffcc;">🚀</div>
+        <div style="font-size:1.4rem; font-weight:bold; color:#00ffcc; margin-bottom:0.5rem; text-shadow:1px 1px 6px #000;">Phase 1: Launch</div>
+        <div style="color:#00ffcc; font-size:1.1rem; margin-bottom:0.7rem;">● Launch of the coin</div>
+        <ul style="text-align:left; color:#b0ffea; font-size:1rem;">
+          <li>First Public Sighting</li>
+        </ul>
+      </div>
+      <div style="background:linear-gradient(135deg,#222 60%,#00ffcc22 100%); border:3px dotted #00ffcc; border-radius:2.5rem; padding:2.5rem 2.5rem; min-width:260px; max-width:320px; box-shadow:0 6px 32px #00ffcc33; display:flex; flex-direction:column; align-items:center;">
+        <div style="font-size:2.2rem; margin-bottom:1rem; color:#00ffcc;">🛸</div>
+        <div style="font-size:1.4rem; font-weight:bold; color:#00ffcc; margin-bottom:0.5rem; text-shadow:1px 1px 6px #000;">Phase 2: Ready for take off</div>
+        <div style="color:#00ffcc; font-size:1.1rem; margin-bottom:0.7rem;">● Building the community and spreading the information</div>
+      </div>
+      <div style="background:linear-gradient(135deg,#222 60%,#00ffcc22 100%); border:3px dotted #00ffcc; border-radius:2.5rem; padding:2.5rem 2.5rem; min-width:260px; max-width:320px; box-shadow:0 6px 32px #00ffcc33; display:flex; flex-direction:column; align-items:center;">
+        <div style="font-size:2.2rem; margin-bottom:1rem; color:#00ffcc;">👾</div>
+        <div style="font-size:1.4rem; font-weight:bold; color:#00ffcc; margin-bottom:0.5rem; text-shadow:1px 1px 6px #000;">Phase 3: Domination</div>
+        <div style="color:#00ffcc; font-size:1.1rem; margin-bottom:0.7rem;">● Getting DEX and overtaking the memecoin community</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>About Alien Coin</h2>
+    <p>
+      Alien Coin is a next-generation digital asset launched on the Solana blockchain and available for trading on Raydium.
+      It's not about hype—it's about utility, artwork, and long-term space-worthy value.
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>Gallery</h2>
+    <div class="gallery">
+      <img src="alien1.png" alt="Alien 1" />
+      <img src="alien2.png" alt="Alien 2" />
+      <img src="alien3.png" alt="Alien 3" />
+      <img src="alien4.png" alt="Alien 4" />
+    </div>
+  </div>
+
+  <!-- Alien Meme Generator Section -->
+  <div class="section" id="alien-meme-generator" style="max-width:600px; margin:auto;">
+    <h2 style="font-size:2.2rem; color:#39ff14; text-shadow:0 0 12px #00ffcc, 0 0 24px #000;">Alien Meme Generator <span style="font-size:1.5rem;">🖼️👽</span></h2>
+    <div style="display:flex; flex-direction:column; align-items:center; gap:1.5rem;">
+      <canvas id="meme-canvas" width="400" height="400" style="background:#181c2b; border-radius:1.5rem; box-shadow:0 0 24px #00ffcc55; margin-bottom:0.5rem;"></canvas>
+      <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
+        <label style="font-size:1rem; color:#00ffcc;">Alien:
+          <select id="meme-alien-select" style="font-size:1.1rem; padding:0.3rem 0.7rem; border-radius:0.5rem; border:2px solid #00ffcc; background:#23294a; color:#00ffcc;">
+            <option value="alien1.png">Alien 1</option>
+            <option value="alien2.png">Alien 2</option>
+            <option value="alien3.png">Alien 3</option>
+            <option value="alien4.png">Alien 4</option>
+            <option value="alien5.png">Alien 5</option>
+            <option value="alien6.png">Alien 6</option>
+          </select>
+        </label>
+        <label style="font-size:1rem; color:#00ffcc;">Top Text:
+          <input id="meme-top-text" type="text" maxlength="40" placeholder="TOP TEXT" style="font-size:1.1rem; border-radius:0.5rem; border:2px solid #00ffcc; background:#23294a; color:#00ffcc; padding:0.3rem 0.7rem; width:120px;">
+        </label>
+        <label style="font-size:1rem; color:#00ffcc;">Bottom Text:
+          <input id="meme-bottom-text" type="text" maxlength="40" placeholder="BOTTOM TEXT" style="font-size:1.1rem; border-radius:0.5rem; border:2px solid #00ffcc; background:#23294a; color:#00ffcc; padding:0.3rem 0.7rem; width:120px;">
+        </label>
+      </div>
+      <button id="download-meme-btn" style="margin-top:0.5rem; padding:0.7rem 2rem; font-size:1.2rem; background:#00ffcc; color:#181c2b; border:none; border-radius:0.7rem; font-weight:bold; box-shadow:0 0 16px #00ffcc77; cursor:pointer;">Download Meme</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 Alien Coin. Powered by Solana & Raydium.</p>
+    <div class="social-buttons">
+      <a href="https://x.com/ALIENCOIN9" target="_blank" class="social-btn">
+        <img src="x-logo.png" alt="X" />
+      </a>
+      <a href="https://t.me/+wi_r_ObQpeo3NDhk" target="_blank" class="social-btn">
+        <img src="telegram-logo.png" alt="Telegram" />
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    function copyAddress() {
+      const addressInput = document.getElementById("contractAddress");
+      addressInput.select();
+      addressInput.setSelectionRange(0, 99999); // for mobile
+      document.execCommand("copy");
+      alert("Contract address copied!");
+    }
+
+    // Floating aliens logic
+    (function() {
+      const alienImages = [
+        "alien1.png", "alien2.png", "alien3.png", "alien4.png", "alien5.png", "alien6.png"
+      ];
+      const alienCount = 12; // Number of floating aliens
+      const container = document.getElementById('floating-aliens');
+      function spawnAlien(isInitial) {
+        const img = document.createElement('img');
+        const src = alienImages[Math.floor(Math.random() * alienImages.length)];
+        img.src = src;
+        img.className = 'floating-alien';
+        // Assign unique class for hover effect
+        const match = src.match(/alien(\d+)\.png/);
+        if (match) img.classList.add('alien' + match[1]);
+        img.setAttribute('tabindex', '0');
+        img.setAttribute('aria-label', 'Alien');
+        // Randomize left position
+        img.style.left = Math.random() * 90 + 'vw';
+        // Randomize width
+        img.style.width = (60 + Math.random() * 40) + 'px';
+        // Randomize direction
+        const direction = Math.random() > 0.5 ? 'up' : 'down';
+        img.classList.add(direction);
+        // Animation duration and delay
+        let duration, delay;
+        if (isInitial) {
+          duration = (5 + Math.random() * 5).toFixed(1) + 's'; // 2x slower for initial drop
+          delay = (Math.random() * 2.4).toFixed(1) + 's'; // Slightly longer delay for initial
+        } else {
+          duration = (10 + Math.random() * 12).toFixed(1) + 's'; // 2x slower for respawn
+          delay = (Math.random() * 12).toFixed(1) + 's';
+        }
+        img.style.animationDuration = duration;
+        img.style.animationDelay = delay;
+        img.style.top = direction === 'up' ? 'auto' : '-120px';
+        img.style.bottom = direction === 'up' ? '-120px' : 'auto';
+        // Interactivity: bounce on click (no sound)
+        img.addEventListener('click', function(e) {
+          e.stopPropagation();
+          img.style.transform = 'scale(1.3) rotate(360deg)';
+          setTimeout(() => { img.style.transform = ''; }, 400);
+        });
+        // Remove and respawn after animation ends
+        img.addEventListener('animationend', function() {
+          img.remove();
+          setTimeout(function() { spawnAlien(false); }, 1000 + Math.random() * 2000);
+        });
+        // Add JS hover animation for wiggle/bounce/shake
+        img.addEventListener('mouseenter', function() {
+          if (img.classList.contains('alien1')) {
+            img.classList.add('wiggle');
+            setTimeout(() => img.classList.remove('wiggle'), 500);
+          } else if (img.classList.contains('alien3')) {
+            img.classList.add('bounce');
+            setTimeout(() => img.classList.remove('bounce'), 600);
+          } else if (img.classList.contains('alien5')) {
+            img.classList.add('shake');
+            setTimeout(() => img.classList.remove('shake'), 500);
+          }
+        });
+        container.appendChild(img);
+      }
+      for (let i = 0; i < alienCount; i++) {
+        spawnAlien(true);
+      }
+    })();
+
+    // Cooldown timer for a specific date/time
+    (function() {
+      const timer = document.getElementById('cooldown-timer');
+      // Set your launch date/time here (UTC or local time)
+      // Example: "2025-07-01T18:00:00Z" (UTC) or "2025-07-01T18:00:00" (local)
+      const launchTime = new Date("2025-07-01T18:00:00Z").getTime();
+      function updateTimer() {
+        const now = Date.now();
+        let diff = Math.max(0, launchTime - now);
+        const hours = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
+        diff %= 1000 * 60 * 60;
+        const minutes = String(Math.floor(diff / (1000 * 60))).padStart(2, '0');
+        diff %= 1000 * 60;
+        const seconds = String(Math.floor(diff / 1000)).padStart(2, '0');
+        timer.textContent = `${hours}:${minutes}:${seconds}`;
+        if (launchTime - now > 0) {
+          requestAnimationFrame(updateTimer);
+        } else {
+          document.getElementById('launch-cooldown').style.display = 'none';
+        }
+      }
+      updateTimer();
+    })();
+
+    // Alien Meme Generator Logic
+    (function() {
+      const canvas = document.getElementById('meme-canvas');
+      const ctx = canvas.getContext('2d');
+      const alienSelect = document.getElementById('meme-alien-select');
+      const topTextInput = document.getElementById('meme-top-text');
+      const bottomTextInput = document.getElementById('meme-bottom-text');
+      const downloadBtn = document.getElementById('download-meme-btn');
+      const alienImages = {
+        'alien1.png': null,
+        'alien2.png': null,
+        'alien3.png': null,
+        'alien4.png': null,
+        'alien5.png': null,
+        'alien6.png': null
+      };
+      // Preload images
+      Object.keys(alienImages).forEach(src => {
+        const img = new window.Image();
+        img.crossOrigin = "anonymous";
+        img.src = src;
+        alienImages[src] = img;
+      });
+      function drawMeme() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#181c2b';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const alien = alienImages[alienSelect.value];
+        if (alien && alien.complete) {
+          // Draw alien centered
+          const imgW = 260, imgH = 260;
+          ctx.drawImage(alien, (canvas.width-imgW)/2, 60, imgW, imgH);
+        }
+        // Draw top text
+        ctx.font = 'bold 2.1rem "Press Start 2P", monospace';
+        ctx.textAlign = 'center';
+        ctx.lineWidth = 6;
+        ctx.strokeStyle = '#000';
+        ctx.fillStyle = '#00ffcc';
+        ctx.textBaseline = 'top';
+        const topText = topTextInput.value.toUpperCase();
+        if (topText) {
+          ctx.strokeText(topText, canvas.width/2, 18);
+          ctx.fillText(topText, canvas.width/2, 18);
+        }
+        // Draw bottom text
+        ctx.textBaseline = 'bottom';
+        const bottomText = bottomTextInput.value.toUpperCase();
+        if (bottomText) {
+          ctx.strokeText(bottomText, canvas.width/2, canvas.height-18);
+          ctx.fillText(bottomText, canvas.width/2, canvas.height-18);
+        }
+      }
+      // Redraw on input
+      [alienSelect, topTextInput, bottomTextInput].forEach(el => {
+        el.addEventListener('input', drawMeme);
+        el.addEventListener('change', drawMeme);
+      });
+      // Redraw when image loads
+      Object.values(alienImages).forEach(img => {
+        img.onload = drawMeme;
+      });
+      // Download meme
+      downloadBtn.addEventListener('click', function() {
+        const link = document.createElement('a');
+        link.download = 'alien-meme.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+      // Initial draw
+      setTimeout(drawMeme, 300);
+    })();
+  </script>
+</body>
+</html>
